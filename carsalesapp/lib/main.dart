@@ -290,6 +290,7 @@ class CarsPage extends StatefulWidget {
 
 class _CarsPageState extends State<CarsPage> {
   List<Car> cars = [];
+  bool isLoading = true;
   
   
 
@@ -310,6 +311,7 @@ class _CarsPageState extends State<CarsPage> {
 
     setState(() {
       cars = loadedCars;
+      isLoading = false;
     });
   } else {
     // Handle errors, e.g., show an error message or fallback to local data
@@ -324,7 +326,10 @@ class _CarsPageState extends State<CarsPage> {
         title: const Text('Liams Cars Stock'),
         backgroundColor: const Color.fromARGB(255, 96, 94, 94),
       ),backgroundColor: Colors.black,
-      body: ListView.builder(
+      body: isLoading
+          ? const Center(
+              child: CircularProgressIndicator(),
+            ): ListView.builder(
   itemCount: cars.length,
   itemBuilder: (context, index) {
     final car = cars[index];
