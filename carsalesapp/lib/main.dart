@@ -1,4 +1,8 @@
+import 'dart:convert';
+
+import 'package:carsalesapp/carmodel.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 void main() {
   runApp(const MyApp());
@@ -276,17 +280,96 @@ class HomePage extends StatelessWidget {
 
 
 // **********************  The second page 
-class CarsPage extends StatelessWidget {
+class CarsPage extends StatefulWidget {
   const CarsPage({super.key});
+
+  @override
+  // ignore: library_private_types_in_public_api
+  _CarsPageState createState() => _CarsPageState();
+}
+
+class _CarsPageState extends State<CarsPage> {
+  List<Car> cars = [];
+  
+  
+
+  @override
+  void initState() {
+    super.initState();
+    loadCars();
+  }
+
+ Future<void> loadCars() async {
+  final response = await http.get(Uri.parse('http://www.bloxlox.net/cars.json'));
+
+  if (response.statusCode == 200) {
+    final List<dynamic> jsonList = json.decode(response.body);
+    final List<Car> loadedCars = jsonList.map((json) => Car.fromJson(json)).toList();
+
+    
+
+    setState(() {
+      cars = loadedCars;
+    });
+  } else {
+    // Handle errors, e.g., show an error message or fallback to local data
+   
+  }
+}
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Cars Page'),
+        title: const Text('Liams Cars Stock'),
+        backgroundColor: const Color.fromARGB(255, 96, 94, 94),
+      ),backgroundColor: Colors.black,
+      body: ListView.builder(
+  itemCount: cars.length,
+  itemBuilder: (context, index) {
+    final car = cars[index];
+    return Card(
+  elevation: 5,
+  margin: const EdgeInsets.all(10.0),
+  child: Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      Image.asset(
+        'assets/${car.image}',
+        height: 200,
+        fit: BoxFit.cover,
       ),
-      body: const Center(
-        child: Text('This is the Cars Page'),
+      Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ListTile(
+          title: Text(
+            '${car.brand} ${car.model}',
+            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Price: €${car.price}'),
+              Text('Mileage: ${car.milage} miles'),
+              Text(
+                'Description: ${car.description}',
+                textAlign: TextAlign.justify, // Justify the text
+              ), const SizedBox(height: 8), // Add some space between the description and the button
+              ElevatedButton(
+                onPressed: () {
+                  // Handle add to favorites button tap
+                  // You can add your logic here
+                },
+                child: const Text('Add to Favorites'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    ],
+  ),
+);
+  },
       ),
     );
   }

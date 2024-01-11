@@ -1,6 +1,36 @@
 [
-    {"brand": "Toyota", "model": "Camry", "image": "car2.jpg"},
-    {"brand": "Honda", "model": "Accord", "image": "car4.jpg"}
+    {"brand": "Porsche", 
+    "model": "911", 
+    "image": "http://www.bloxlox.net/images/bc1.jpg", 
+    "price": "120000", 
+    "milage": "29000",
+    "description" : "Elevate your driving experience with our luxury cars that seamlessly blend performance and opulence. Immerse yourself in an interior crafted with the finest materials, cutting-edge technology, and refined design. Every journey becomes a statement of sophistication, ensuring you arrive in style."
+  },
+
+  {"brand": "Audi", 
+  "model": "RS8", 
+  "image": "bc2.jpg", 
+  "price": "170000", 
+  "milage": "9000",
+  "description" : "Unleash the thrill of the road with our sporty cars engineered for high-performance adventures. Feel the power of precision-engineered engines, responsive handling, and aerodynamic design. Whether navigating city streets or conquering open highways, these cars deliver an exhilarating driving experience that ignites your passion for the road."
+},
+
+{"brand": "lamborghini", 
+"model": "Aventador", 
+"image": "http://www.bloxlox.net/images/bc3.jpg", 
+"price": "231000", 
+"milage": "16000",
+"description" : "Embrace a greener future with our lineup of fuel-efficient and environmentally conscious cars. Designed with innovative technology, these vehicles prioritize sustainability without compromising on style or comfort. Experience the joy of driving while minimizing your carbon footprint and contributing to a more eco-friendly lifestyle."
+},
+
+{"brand": "Porsche", 
+"model": "911-RS", 
+"image": "http://www.bloxlox.net/images/bc4.jpg", 
+"price": "249000", 
+"milage": "400",
+"description" : "Discover the perfect balance of safety, comfort, and versatility in our family-friendly cars. Thoughtfully designed interiors offer ample space and modern amenities, ensuring a comfortable ride for everyone. With advanced safety features and practical design, these cars redefine family travel, making every journey a memorable and enjoyable experience."
+}
+  
     
   ]
   
