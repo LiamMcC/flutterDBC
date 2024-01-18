@@ -1,10 +1,18 @@
+// ignore_for_file: library_private_types_in_public_api
+
 import 'dart:convert';
 
 import 'package:carsalesapp/carmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-void main() {
+import 'package:camera/camera.dart';
+import 'camera_utils.dart';
+import 'package:gallery_saver/gallery_saver.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await CameraUtils.initializeCameras();
   runApp(const MyApp());
 }
 
@@ -205,7 +213,7 @@ class HomePage extends StatelessWidget {
                 // Handle home button tap
                 Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const CarsPage()),
+                    MaterialPageRoute(builder: (context) => const CameraScreen()),
                   );
               },
               style: ElevatedButton.styleFrom(
@@ -216,7 +224,7 @@ class HomePage extends StatelessWidget {
                 ),
               ),
               
-              child: const Text('Finance'),
+              child: const Text('Trade In'),
             ),
             ElevatedButton(
               onPressed: () {
@@ -261,6 +269,10 @@ class HomePage extends StatelessWidget {
             ElevatedButton(
               onPressed: () {
                 // Handle admin button tap
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const CameraScreen()),
+                  );
               },
               style: ElevatedButton.styleFrom(
                 foregroundColor: Colors.white, backgroundColor: const Color.fromARGB(255, 38, 38, 38),
@@ -268,7 +280,7 @@ class HomePage extends StatelessWidget {
                   borderRadius: BorderRadius.circular(5.0),
                 ),
               ),
-              child: const Text('Admin'),
+              child: const Text('Finance'),
               
             ),
           ],
@@ -284,13 +296,12 @@ class CarsPage extends StatefulWidget {
   const CarsPage({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
+
   _CarsPageState createState() => _CarsPageState();
 }
 
 class _CarsPageState extends State<CarsPage> {
   List<Car> cars = [];
-  bool isLoading = true;
   
   
 
@@ -311,7 +322,6 @@ class _CarsPageState extends State<CarsPage> {
 
     setState(() {
       cars = loadedCars;
-      isLoading = false;
     });
   } else {
     // Handle errors, e.g., show an error message or fallback to local data
@@ -326,10 +336,7 @@ class _CarsPageState extends State<CarsPage> {
         title: const Text('Liams Cars Stock'),
         backgroundColor: const Color.fromARGB(255, 96, 94, 94),
       ),backgroundColor: Colors.black,
-      body: isLoading
-          ? const Center(
-              child: CircularProgressIndicator(),
-            ): ListView.builder(
+      body: ListView.builder(
   itemCount: cars.length,
   itemBuilder: (context, index) {
     final car = cars[index];
@@ -375,6 +382,77 @@ class _CarsPageState extends State<CarsPage> {
   ),
 );
   },
+      ),
+    );
+  }
+}
+
+
+// camera page 
+
+
+// camera_screen.dart
+//  _controller = CameraController(CameraUtils.cameras[0], ResolutionPreset.medium);
+
+class CameraScreen extends StatefulWidget {
+  const CameraScreen({Key? key}) : super(key: key);
+
+  @override
+  _CameraScreenState createState() => _CameraScreenState();
+}
+
+class _CameraScreenState extends State<CameraScreen> {
+  late CameraController _controller;
+  late Future<void> _initializeControllerFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = CameraController(CameraUtils.cameras[0], ResolutionPreset.medium);
+    _initializeControllerFuture = _controller.initialize();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+Future<void> _takePicture() async {
+  try {
+    await _initializeControllerFuture;
+
+    final XFile file = await _controller.takePicture();
+
+    // Save the captured image to the gallery
+    await GallerySaver.saveImage(file.path);
+
+    // Do something with the captured image file (e.g., display it)
+    print("Picture taken and saved to gallery: ${file.path}");
+  } catch (e) {
+    print("Error taking or saving picture: $e");
+  }
+}
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Camera Screen'),
+      ),
+      body: FutureBuilder<void>(
+        future: _initializeControllerFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            return CameraPreview(_controller);
+          } else {
+            return const Center(child: CircularProgressIndicator());
+          }
+        },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _takePicture,
+        child: const Icon(Icons.camera_alt),
       ),
     );
   }
