@@ -1,7 +1,7 @@
 // ignore_for_file: library_private_types_in_public_api
 
 import 'dart:convert';
-
+import 'package:google_fonts/google_fonts.dart';
 import 'package:carsalesapp/carmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -44,16 +44,13 @@ class HomePage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const SizedBox(height: 20.0),
-              const Text(
-                'Liams Cars',
-                style: TextStyle(
-                  fontSize: 36.0,
-                  fontWeight: FontWeight.bold,
-                  color: Color.fromARGB(255, 252, 252, 252),
-                  fontStyle: FontStyle.italic, // Set to FontStyle.italic for italic style
-                 fontFamily: 'Sans-serif', // Replace 'YourFontFamily' with the desired font family
-                ),
-              ),
+                    Text(
+                    'Liams Cars',
+                    style: GoogleFonts.permanentMarker(
+                      textStyle: const TextStyle(color: Color.fromARGB(255, 253, 254, 255), letterSpacing: .5, fontSize: 44,),
+                    ),
+),
+              
               const Text(
                 'Driving Dreams, Delivering Value!',
                 style: TextStyle(
@@ -271,7 +268,7 @@ class HomePage extends StatelessWidget {
                 // Handle admin button tap
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const CameraScreen()),
+                    MaterialPageRoute(builder: (context) => const CarsPage()),
                   );
               },
               style: ElevatedButton.styleFrom(
@@ -427,8 +424,25 @@ Future<void> _takePicture() async {
     // Save the captured image to the gallery
     await GallerySaver.saveImage(file.path);
 
-    // Do something with the captured image file (e.g., display it)
-    print("Picture taken and saved to gallery: ${file.path}");
+    // Show a Thank-You dialog after taking the picture
+    // ignore: use_build_context_synchronously
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Thank You!'),
+          content: const Text('Thank you for taking the picture! It has been sent to us for a trade in value. Its Been saved in the gallery too for you to look back. We will be in touch soon'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context); // Close the dialog
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
   } catch (e) {
     print("Error taking or saving picture: $e");
   }
@@ -438,8 +452,9 @@ Future<void> _takePicture() async {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Camera Screen'),
-      ),
+        title: const Text('Show Us Your Car'),
+        backgroundColor: Colors.black,
+      ),backgroundColor: Colors.black,
       body: FutureBuilder<void>(
         future: _initializeControllerFuture,
         builder: (context, snapshot) {
