@@ -9,6 +9,8 @@ import 'package:http/http.dart' as http;
 import 'package:camera/camera.dart';
 import 'camera_utils.dart';
 import 'package:gallery_saver/gallery_saver.dart';
+import 'package:share/share.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -326,64 +328,136 @@ class _CarsPageState extends State<CarsPage> {
   }
 }
 
+// ignore: unused_element
+void _shareCarData(Car car) {
+    Share.share(
+      'Check out this car:\n\n'
+      'Brand: ${car.brand}\n'
+      'Model: ${car.model}\n'
+      'Price: €${car.price}\n'
+      'Mileage: ${car.milage} miles\n'
+      'Description: ${car.description}\n',
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Liams Cars Stock'),
         backgroundColor: const Color.fromARGB(255, 96, 94, 94),
-      ),backgroundColor: Colors.black,
+      ),
+      backgroundColor: Colors.black,
       body: ListView.builder(
-  itemCount: cars.length,
-  itemBuilder: (context, index) {
-    final car = cars[index];
-    return Card(
-  elevation: 5,
-  margin: const EdgeInsets.all(10.0),
-  child: Column(
-    crossAxisAlignment: CrossAxisAlignment.stretch,
-    children: [
-      Image.asset(
-        'assets/${car.image}',
-        height: 200,
-        fit: BoxFit.cover,
-      ),
-      Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: ListTile(
-          title: Text(
-            '${car.brand} ${car.model}',
-            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
-          subtitle: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Price: €${car.price}'),
-              Text('Mileage: ${car.milage} miles'),
-              Text(
-                'Description: ${car.description}',
-                textAlign: TextAlign.justify, // Justify the text
-              ), const SizedBox(height: 8), // Add some space between the description and the button
-              ElevatedButton(
-                onPressed: () {
-                  // Handle add to favorites button tap
-                  // You can add your logic here
-                },
-                child: const Text('Add to Favorites'),
+        itemCount: cars.length,
+        itemBuilder: (context, index) {
+          final car = cars[index];
+          return Dismissible(
+            key: UniqueKey(),
+            background: Container(
+              color: Colors.red,
+              alignment: Alignment.centerRight,
+              padding: const EdgeInsets.only(right: 20),
+              child: const Icon(
+                Icons.delete,
+                color: Colors.white,
               ),
-            ],
-          ),
-        ),
-      ),
-    ],
-  ),
-);
-  },
+            ),
+            onDismissed: (direction) {
+              // Handle dismiss (e.g., remove item from list)
+              setState(() {
+                cars.removeAt(index);
+              });
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Car dismissed')),
+              );
+            },
+            secondaryBackground: Container(
+              color: Colors.green,
+              alignment: Alignment.centerLeft,
+              padding: const EdgeInsets.only(left: 20),
+              child: const Icon(
+                Icons.share,
+                color: Colors.white,
+              ),
+            ),
+            confirmDismiss: (direction) async {
+              if (direction == DismissDirection.endToStart) {
+                // Show confirmation dialog for deletion
+                return await showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: const Text('Delete Confirmation'),
+                      content: const Text('Are you sure you want to delete this car?'),
+                      actions: <Widget>[
+                        TextButton(
+                          onPressed: () => Navigator.of(context).pop(false),
+                          child: const Text('Cancel'),
+                        ),
+                        TextButton(
+                          onPressed: () => Navigator.of(context).pop(true),
+                          child: const Text('Delete'),
+                        ),
+                      ],
+                    );
+                  },
+                );
+              } else if (direction == DismissDirection.startToEnd) {
+                // Share car data
+                _shareCarData(car);
+                return false; // Prevent dismiss after sharing
+              }
+              return false;
+            },
+            child: Card(
+              elevation: 5,
+              margin: const EdgeInsets.all(10.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Image.asset(
+                    'assets/${car.image}',
+                    height: 200,
+                    fit: BoxFit.cover,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: ListTile(
+                      title: Text(
+                        '${car.brand} ${car.model}',
+                        style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      ),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Price: €${car.price}'),
+                          Text('Mileage: ${car.milage} miles'),
+                          Text(
+                            'Description: ${car.description}',
+                            textAlign: TextAlign.justify,
+                          ),
+                          const SizedBox(height: 8),
+                          ElevatedButton(
+                            onPressed: () {
+                              // Handle add to favorites button tap
+                              // You can add your logic here
+                            },
+                            child: const Text('Add to Favorites'),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
       ),
     );
   }
 }
-
 
 // camera page 
 
