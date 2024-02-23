@@ -1,3 +1,4 @@
+// ignore_for_file: library_private_types_in_public_api
 
 import 'dart:convert';
 import 'package:google_fonts/google_fonts.dart';
@@ -388,65 +389,9 @@ void _shareCarData(Car car) {
         itemCount: cars.length,
         itemBuilder: (context, index) {
           final car = cars[index];
-          return Dismissible(
-            key: UniqueKey(),
-            background: Container(
-              color: Colors.red,
-              alignment: Alignment.centerRight,
-              padding: const EdgeInsets.only(right: 20),
-              child: const Icon(
-                Icons.delete,
-                color: Colors.white,
-              ),
-            ),
-            onDismissed: (direction) {
-              // Handle dismiss (e.g., remove item from list)
-              setState(() {
-                cars.removeAt(index);
-              });
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Car dismissed')),
-              );
-            },
-            secondaryBackground: Container(
-              color: Colors.green,
-              alignment: Alignment.centerLeft,
-              padding: const EdgeInsets.only(left: 20),
-              child: const Icon(
-                Icons.share,
-                color: Colors.white,
-              ),
-            ),
-            confirmDismiss: (direction) async {
-              if (direction == DismissDirection.endToStart) {
-                // Show confirmation dialog for deletion
-                return await showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                      title: const Text('Delete Confirmation'),
-                      content: const Text('Are you sure you want to delete this car?'),
-                      actions: <Widget>[
-                        TextButton(
-                          onPressed: () => Navigator.of(context).pop(false),
-                          child: const Text('Cancel'),
-                        ),
-                        TextButton(
-                          onPressed: () => Navigator.of(context).pop(true),
-                          child: const Text('Delete'),
-                        ),
-                      ],
-                    );
-                  },
-                );
-              } else if (direction == DismissDirection.startToEnd) {
-                // Share car data
-                _shareCarData(car);
-                return false; // Prevent dismiss after sharing
-              }
-              return false;
-            },
-            child: Card(
+         return Dismissible(
+          key: UniqueKey(),
+          child:  Card(
               elevation: 5,
               margin: const EdgeInsets.all(10.0),
               child: Column(
@@ -490,7 +435,7 @@ void _shareCarData(Car car) {
                   ),
                 ],
               ),
-            ),
+            )
           );
         },
       ),
@@ -560,7 +505,6 @@ class CameraScreen extends StatefulWidget {
   const CameraScreen({Key? key}) : super(key: key);
 
   @override
-  // ignore: library_private_types_in_public_api
   _CameraScreenState createState() => _CameraScreenState();
 }
 
